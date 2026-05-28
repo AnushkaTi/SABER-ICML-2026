@@ -160,12 +160,6 @@ per_epoch_acc.npy
 results.json
 ```
 
-## Notes
-
-* Use `--selection_method proj_cos` for the gradient-geometry-based SABER criterion.
-* Use `--selection_method wasserstein` for the loss-distribution-based SABER criterion.
-* For large models such as LLaMA or Qwen, ensure that the corresponding Hugging Face model weights are available.
-* Decoder-only experiments may require sufficient GPU memory depending on the selected backbone and batch size.
 
 
 ```
