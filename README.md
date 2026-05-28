@@ -1,4 +1,8 @@
-# SABER-ICML-2026
+# Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning
+
+This repository contains the official implementation of **SABER**:
+
+**Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning**
 
 ## Abstract
 
@@ -6,4 +10,197 @@ While prompt-based parameter-efficient continual learning mitigates catastrophic
 
 SABER determines *when* backward refinement is beneficial using complementary task-correlation criteria based on prompt-gradient geometry and loss-distribution similarity, and *how* to perform refinement safely by restricting updates to non-interfering directions in the prompt parameter space.
 
-Extensive experiments across multiple continual learning benchmarks, and diverse pretrained backbones, including T5-Large, LLaMA, and Qwen, demonstrate that SABER consistently achieves positive backward transfer while maintaining strong overall average performance.
+Extensive experiments across multiple continual learning benchmarks and diverse pretrained backbones, including T5-Large, LLaMA, and Qwen, demonstrate that SABER consistently achieves positive backward transfer while maintaining strong overall average performance.
+
+## Repository Structure
+
+```text
+.
+├── seq2seq/
+│   ├── LongSequence/        # Encoder-decoder experiments on Long Sequence benchmark
+│   └── SuperNI/             # Encoder-decoder experiments on SuperNI benchmark
+├── autoregressive/
+│   ├── LongSequence/        # Decoder-only experiments on Long Sequence benchmark
+│   └── SuperNI/             # Decoder-only experiments on SuperNI benchmark
+└── data/
+    ├── train/               # Sample training data
+    └── test/                # Sample test data
+```
+
+## Main Components
+
+The repository supports two model families:
+
+1. **Seq2Seq models**, such as T5-Large.
+2. **Autoregressive decoder-only models**, such as LLaMA and Qwen.
+
+SABER supports two complementary task-correlation criteria:
+
+* `proj_cos`: prompt-gradient-geometry-based criterion;
+* `wasserstein`: loss-distribution-similarity-based criterion.
+
+## Setup
+
+Create and activate a conda environment:
+
+```bash
+conda create -n saber python=3.10
+conda activate saber
+```
+
+Install the required packages:
+
+```bash
+pip install torch transformers datasets numpy pandas tqdm scikit-learn scipy
+```
+
+Depending on the backbone model, you may also need:
+
+```bash
+pip install accelerate sentencepiece protobuf
+```
+
+## Data
+
+Sample data for training and evaluation is provided under:
+
+```text
+data/train/
+data/test/
+```
+
+For full experiments, prepare the corresponding benchmark datasets following the same format as the provided sample files.
+
+## Running Seq2Seq Experiments
+
+For Long Sequence experiments with an encoder-decoder model such as T5-Large:
+
+```bash
+cd seq2seq/LongSequence
+
+python train.py \
+  --save_name saber_t5_longsequence \
+  --task_list mnli cb wic copa \
+  --select_k_per_class 1000 \
+  --batch_size 32 \
+  --lr 0.3 \
+  --num_epochs 10 \
+  --freeze_weights \
+  --prefix_len 10 \
+  --model_name t5-large \
+  --early_stopping \
+  --test_eval_after_every_task \
+  --selection_method proj_cos
+```
+
+To use the loss-distribution-similarity criterion, replace the last argument with:
+
+```bash
+--selection_method wasserstein
+```
+
+## Running Decoder-Only Experiments
+
+For Long Sequence experiments with a decoder-only model:
+
+```bash
+cd autoregressive/LongSequence
+
+python main.py \
+  --base_model_name meta-llama/Llama-2-7b-hf \
+  --tasks "yelp_review_full,amazon,mnli,cb,copa,qqp,rte,imdb,sst2,dbpedia_14,ag_news,yahoo_answers_topics,multirc,boolq,wic" \
+  --prefix_len 10 \
+  --max_length 256 \
+  --lr 0.03 \
+  --batch_size 16 \
+  --k_per_class 1000 \
+  --num_epochs 2 \
+  --seed 42 \
+  --save_path "./runs/saber_llama_longsequence" \
+  --eval_all_tasks \
+  --eval_seen_only \
+  --fix_test_data \
+  --test_fixed_dir "../../data/test" \
+  --data_root "../../data" \
+  --selection_method proj_cos
+```
+
+To use the loss-distribution-similarity criterion:
+
+```bash
+--selection_method wasserstein
+```
+
+## SuperNI Experiments
+
+The repository also includes SuperNI implementations under:
+
+```text
+seq2seq/SuperNI/
+autoregressive/SuperNI/
+```
+
+For decoder-only SuperNI experiments, use:
+
+```bash
+cd autoregressive/SuperNI
+
+python caller.py \
+  --base_model_name meta-llama/Llama-2-7b-hf \
+  --tasks "task1,task2,task3" \
+  --prefix_len 10 \
+  --max_length 1024 \
+  --lr 0.03 \
+  --batch_size 8 \
+  --k_per_class 2000 \
+  --num_epochs 10 \
+  --seed 42 \
+  --save_path "./runs/saber_superni" \
+  --eval_all_tasks \
+  --fix_test_data
+```
+
+Please replace `"task1,task2,task3"` with the desired SuperNI task sequence.
+
+## Outputs
+
+The scripts save learned prompts, evaluation results, and intermediate logs to the specified output directory. Typical output files include:
+
+```text
+results_dict.npy
+results_history.npy
+prompts.npy
+per_epoch_acc.npy
+results.json
+```
+
+## Notes
+
+* Use `--selection_method proj_cos` for the gradient-geometry-based SABER criterion.
+* Use `--selection_method wasserstein` for the loss-distribution-based SABER criterion.
+* For large models such as LLaMA or Qwen, ensure that the corresponding Hugging Face model weights are available.
+* Decoder-only experiments may require sufficient GPU memory depending on the selected backbone and batch size.
+
+## Citation
+
+If you use this code, please cite our paper:
+
+```bibtex
+@inproceedings{saber2026,
+  title={Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning},
+  author={Tiwari, Anushka and Ji, Kaiyi},
+  booktitle={International Conference on Machine Learning},
+  year={2026}
+}
+```
+
+## Contact
+
+For questions, please contact:
+
+**Anushka Tiwari**
+University at Buffalo
+Email: [atiwari4@buffalo.edu](mailto:atiwari4@buffalo.edu)
+
+```
+```
