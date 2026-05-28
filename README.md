@@ -1,7 +1,5 @@
 # Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning
 
-This repository contains the official implementation of **SABER**:
-
 **Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning**
 
 ## Abstract
@@ -181,26 +179,6 @@ results.json
 * For large models such as LLaMA or Qwen, ensure that the corresponding Hugging Face model weights are available.
 * Decoder-only experiments may require sufficient GPU memory depending on the selected backbone and batch size.
 
-## Citation
-
-If you use this code, please cite our paper:
-
-```bibtex
-@inproceedings{saber2026,
-  title={Turning Back Without Forgetting: Selective Backward Refinement for Parameter-Efficient Continual Learning},
-  author={Tiwari, Anushka and Ji, Kaiyi},
-  booktitle={International Conference on Machine Learning},
-  year={2026}
-}
-```
-
-## Contact
-
-For questions, please contact:
-
-**Anushka Tiwari**
-University at Buffalo
-Email: [atiwari4@buffalo.edu](mailto:atiwari4@buffalo.edu)
 
 ```
 ```
