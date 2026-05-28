@@ -42,15 +42,7 @@ conda activate saber
 
 Install the required packages:
 
-```bash
-pip install torch transformers datasets numpy pandas tqdm scikit-learn scipy
-```
-
-Depending on the backbone model, you may also need:
-
-```bash
-pip install accelerate sentencepiece protobuf
-```
+pip install -r requirements.txt
 
 ## Data
 
